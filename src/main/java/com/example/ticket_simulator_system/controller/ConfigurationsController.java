@@ -14,9 +14,11 @@ import com.example.ticket_simulator_system.threads.Vendor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/config")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class ConfigurationsController {
 
     @Autowired
@@ -66,7 +68,7 @@ public class ConfigurationsController {
     }
 
     @PostMapping("/create-vendor")
-    public void createVendors(@RequestBody RequestVendorDto vendorDto) {
+    public void createVendors(@RequestBody RequestVendorDto vendorDto) throws IOException {
         vendorServiceInterface.createVendor(vendorDto);
     }
 

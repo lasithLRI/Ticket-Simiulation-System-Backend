@@ -3,9 +3,11 @@ package com.example.ticket_simulator_system.Services;
 import com.example.ticket_simulator_system.dtos.RequestVendorDto;
 import com.example.ticket_simulator_system.pool.TicketPool;
 import com.example.ticket_simulator_system.threads.Vendor;
+import com.example.ticket_simulator_system.websocket.AppWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,15 +17,19 @@ public class VendorService implements VendorServiceInterface {
     @Autowired
     private TicketPool ticketPool;
 
+    @Autowired
+    private AppWebSocketHandler appWebSocketHandler;
+
     List<Thread> vendorsThreads = new ArrayList<>();
 
 
 
     @Override
-    public void createVendor(RequestVendorDto vendorDto){
+    public void createVendor(RequestVendorDto vendorDto) throws IOException {
         Thread thread = new Thread(new Vendor(ticketPool));
         thread.setName(vendorDto.getVendorName());
         vendorsThreads.add(thread);
+        appWebSocketHandler.sendCreatedVendor(vendorDto.getVendorName());
 
     }
 
