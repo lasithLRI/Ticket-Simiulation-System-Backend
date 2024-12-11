@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.logging.Logger;
+
 @Component
 @Data
 @RequiredArgsConstructor
@@ -17,11 +19,13 @@ public class Customer implements Runnable{
     private final TicketPool ticketPool;
 
 
+    private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
+
 
     @Override
     public void run() {
 
-        System.out.println(ticketPool.getTotalTicketCapacity());
+        logger.info("Total Tickets : "+ticketPool.getTotalTicketCapacity());
 
         while (ticketPool.getSoldTicketsCounter()<=ticketPool.getTotalTicketCapacity()){
 
@@ -32,7 +36,8 @@ public class Customer implements Runnable{
             }
 
             if (ticketPool.getSoldTicketsCounter() >= ticketPool.getTotalTicketCapacity()){
-                System.out.println("All Tickets sold "+ Thread.currentThread().getName());
+                logger.info("All Tickets sold "+ Thread.currentThread().getName());
+
                 return;
             }
 

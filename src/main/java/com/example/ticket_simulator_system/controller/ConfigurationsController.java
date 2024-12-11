@@ -63,7 +63,7 @@ public class ConfigurationsController {
     }
 
     @PostMapping("create-customer")
-    public void createCustomers(@RequestBody RequestCustomerDto customerDto){
+    public void createCustomers(@RequestBody RequestCustomerDto customerDto) throws IOException {
         customerServiceInterface.createCustomer(customerDto);
     }
 

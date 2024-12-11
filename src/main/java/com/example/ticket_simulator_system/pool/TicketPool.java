@@ -1,11 +1,15 @@
 package com.example.ticket_simulator_system.pool;
 
+import com.example.ticket_simulator_system.Services.TicketsEntityService;
+import com.example.ticket_simulator_system.entities.TicketsEntity;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Component
 @Data
@@ -14,13 +18,19 @@ public class TicketPool {
     private int totalTicketCapacity;
     private int ticketsReleaseCounter = 0;
     private int soldTicketsCounter = 0;
-    private List<String> tickets = Collections.synchronizedList(new ArrayList<>());
+    private List<TicketsEntity> tickets = Collections.synchronizedList(new ArrayList<>());
 
-    public synchronized void addTicket() throws InterruptedException {
+    @Autowired
+    private TicketsEntityService ticketsEntityService;
+
+    private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
+
+    public synchronized void addTicket(TicketsEntity ticketsEntity) throws InterruptedException {
 
         if ((ticketsReleaseCounter>=maxPoolCapacity) && (ticketsReleaseCounter < totalTicketCapacity)){
-            System.out.println(ticketsReleaseCounter+" - "+totalTicketCapacity);
-            System.out.println("Ticket pool is full -"+Thread.currentThread().getName());
+
+            logger.info(ticketsReleaseCounter+" - "+totalTicketCapacity);
+            logger.info("Ticket pool is full -"+Thread.currentThread().getName());
             wait();
         }
 
@@ -29,20 +39,21 @@ public class TicketPool {
             return;
         }
 
-        tickets.add("Ticket added - "+Thread.currentThread().getName());
-        System.out.println("Ticket added - "+Thread.currentThread().getName());
+        tickets.add(ticketsEntity);
+        logger.info(ticketsEntity.getTicketId()+" Add");
         ticketsReleaseCounter++;
-        System.out.println("Released "+ticketsReleaseCounter);
+        logger.info("Released "+ticketsReleaseCounter);
         notify();
 
     }
 
     public synchronized void removeTicket() throws InterruptedException {
         if (!tickets.isEmpty()){
-            String ticket = tickets.remove(0);
-            System.out.println("Ticket removed : "+ ticket);
+            TicketsEntity ticket = tickets.remove(0);
+            ticket.setCustomerName(Thread.currentThread().getName());
+            ticketsEntityService.addTicket(ticket);
             soldTicketsCounter++;
-            System.out.println("Sold "+ soldTicketsCounter);
+            logger.info(ticket.getTicketId() +" Sold");
             notify();
         }
 
@@ -53,13 +64,9 @@ public class TicketPool {
 
 
         if (tickets.isEmpty()){
-            System.out.println("Ticket pool is empty...");
+            logger.info("Ticket pool is empty...");
             wait();
         }
-
-
-
-
     }
 
 

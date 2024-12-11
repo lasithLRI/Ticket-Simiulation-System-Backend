@@ -1,5 +1,6 @@
 package com.example.ticket_simulator_system.configurations;
 
+import com.example.ticket_simulator_system.Services.TicketsEntityService;
 import com.example.ticket_simulator_system.pool.TicketPool;
 import com.example.ticket_simulator_system.threads.Customer;
 import com.example.ticket_simulator_system.threads.Vendor;

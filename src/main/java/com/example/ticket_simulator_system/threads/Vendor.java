@@ -1,5 +1,6 @@
 package com.example.ticket_simulator_system.threads;
 
+import com.example.ticket_simulator_system.entities.TicketsEntity;
 import com.example.ticket_simulator_system.pool.TicketPool;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
+import java.util.logging.Logger;
 
 @Component
 @Data
@@ -18,22 +21,30 @@ public class Vendor implements Runnable{
     @Autowired
     private final TicketPool ticketPool;
 
+    private static final Logger logger = Logger.getLogger(TicketPool.class.getName());
+
 
 
 
     @Override
     public void run() {
-        System.out.println(ticketPool.getTotalTicketCapacity());
+        logger.info("Total available tickets : " + ticketPool.getTotalTicketCapacity());
 
         while (true){
             try {
-                ticketPool.addTicket();
+
+                TicketsEntity ticketsEntity = TicketsEntity.builder()
+                        .vendorName(Thread.currentThread().getName())
+                        .customerName(null)
+                        .build();
+
+                ticketPool.addTicket(ticketsEntity);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
             if (ticketPool.getTicketsReleaseCounter()>=ticketPool.getTotalTicketCapacity()){
-                System.out.println("Maximum tickets count reached "+ Thread.currentThread().getName());
+                logger.info("Maximum tickets count reached "+ Thread.currentThread().getName());
                 return;
             }
 

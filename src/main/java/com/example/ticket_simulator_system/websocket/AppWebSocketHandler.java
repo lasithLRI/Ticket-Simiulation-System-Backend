@@ -50,4 +50,17 @@ public class AppWebSocketHandler extends AbstractWebSocketHandler {
         sendMessage(vendorData);
     }
 
+    public void sendNotification(String message) throws IOException {
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("type","notification");
+        notification.put("message", message);
+        sendMessage(notification);
+    }
+
+    public void sendCreateCustomer(String customerName) throws IOException {
+        Map<String, Object> name = new HashMap<>();
+        name.put("type","customerName");
+        name.put("message", customerName);
+        sendMessage(name);
+    }
 }
